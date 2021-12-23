@@ -1,0 +1,24 @@
+{
+  "name": "ssu-it-locker-lambda",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Backend Lambda script for ssu-it-locker",
+  "main": "app.js",
+  "author": "EATSTEAK <me@eatsteak.dev>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "scripts": {
+    "build": "sam build",
+    "dev": "sam local start-api",
+    "delpoy": "sam deploy",
+    "test": "mocha tests/unit",
+    "integ-test": "mocha tests/integration"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.815.0",
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1"
+  }
+}
