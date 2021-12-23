@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "description": "Backend Lambda script for ssu-it-locker",
-  "main": "app.js",
+  "main": "src/index.js",
   "author": "EATSTEAK <me@eatsteak.dev>",
   "license": "MIT",
   "dependencies": {
@@ -11,8 +11,9 @@
   },
   "scripts": {
     "build": "sam build",
-    "dev": "sam local start-api",
-    "delpoy": "sam deploy",
+    "dev": "sam build && sam local start-api",
+    "deploy": "sam deploy --profile globalmedia --no-confirm-changeset",
+    "delete": "sam delete --no-prompts",
     "test": "mocha tests/unit",
     "integ-test": "mocha tests/integration"
   },

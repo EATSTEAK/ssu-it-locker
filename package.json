@@ -1,0 +1,25 @@
+{
+  "name": "ssu-it-locker",
+  "version": "0.0.1",
+  "description": "SSU IT Collage Locker system.",
+  "private": true,
+  "scripts": {
+    "build": "pnpm build -r",
+    "dev": "pnpm dev -r",
+    "delete": "pnpm delete -r",
+    "deploy": "pnpm deploy -r"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EATSTEAK/ssu-it-locker.git"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "author": "EATSTEAK <me@eatsteak.dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EATSTEAK/ssu-it-locker/issues"
+  },
+  "homepage": "https://github.com/EATSTEAK/ssu-it-locker#readme"
+}

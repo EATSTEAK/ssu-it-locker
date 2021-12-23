@@ -11,11 +11,11 @@ Globals:
     Timeout: 3
 
 Resources:
-  SsuLockerFunction:
+  CallbackFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ./
-      Handler: app.lambdaHandler
+      CodeUri: ./src
+      Handler: auth.callbackHandler
       Runtime: nodejs14.x
       Architectures:
         - x86_64
@@ -25,21 +25,57 @@ Resources:
           Properties:
             Path: /auth/callback
             Method: get
+  LogoutFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./src
+      Handler: auth.logoutHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
         Logout:
           Type: Api
           Properties:
             Path: /auth/logout
             Method: get
+  GetLockerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./src
+      Handler: locker.getLockerHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
         GetLocker:
           Type: Api
           Properties:
             Path: /locker/get
             Method: get
+  GetClaimedLockersFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./src
+      Handler: locker.getClaimedLockersHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
         GetAllLockers:
           Type: Api
           Properties:
             Path: /locker/all
             Method: get
+  ClaimLockerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./src
+      Handler: locker.claimLockerHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
         ClaimLocker:
           Type: Api
           Properties:
@@ -50,8 +86,6 @@ Resources:
     Properties:
       AttributeDefinitions:
         - AttributeName: id
-          AttributeType: S
-        - AttributeName: access_token
           AttributeType: S
       KeySchema:
         - AttributeName: id
@@ -66,9 +100,3 @@ Outputs:
   SsuLockerApi:
     Description: "API Gateway endpoint URL for Prod stage for SSU Locker function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
-  SsuLockerFunction:
-    Description: "Ssu Locker Lambda Function ARN"
-    Value: !GetAtt SsuLockerFunction.Arn
-  SsuLockerIamRole:
-    Description: "Implicit IAM Role created for SSU Locker function"
-    Value: !GetAtt SsuLockerFunctionRole.Arn
