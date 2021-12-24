@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
+  import { variables } from '$lib/variables';
   const result = $page.query.get('result');
-  const id = fetch('http://localhost:3000/auth/callback?result=' + encodeURIComponent(result)).then((res) => res.json());
+  const baseUrl = variables.baseUrl ?? '';
+  const id = fetch(baseUrl + '/auth/callback?result=' + encodeURIComponent(result)).then((res) => res.json());
 </script>
 
 <h1>SSU Auth result.</h1>

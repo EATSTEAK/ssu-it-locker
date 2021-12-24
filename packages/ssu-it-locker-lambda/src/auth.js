@@ -1,4 +1,5 @@
 const https = require("https");
+const dbClient = require("./db_client");
 
 function request_body(result) {
   return new Promise((resolve, reject) => {
@@ -70,6 +71,7 @@ exports.callbackHandler = async (event, context) => {
 };
 
 exports.logoutHandler = async (event, context) => {
+  await dbClient.dbTest();
   return {
     statusCode: 200,
     body: JSON.stringify({

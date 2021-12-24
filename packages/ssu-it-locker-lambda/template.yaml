@@ -4,12 +4,19 @@ Description: >
   ssu-it-locker
 
   SSU IT Collage locker reservation system.
-  
+
+Parameters:
+  TableName:
+    Type: String
+    Description: DynamoDB Table name for user, locker information.
+    Default: 'LockerTable'
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
-
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref TableName
 Resources:
   CallbackFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -17,6 +24,10 @@ Resources:
       CodeUri: ./src
       Handler: auth.callbackHandler
       Runtime: nodejs14.x
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
       Architectures:
         - x86_64
       Events:
@@ -31,6 +42,10 @@ Resources:
       CodeUri: ./src
       Handler: auth.logoutHandler
       Runtime: nodejs14.x
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
       Architectures:
         - x86_64
       Events:
@@ -45,6 +60,10 @@ Resources:
       CodeUri: ./src
       Handler: locker.getLockerHandler
       Runtime: nodejs14.x
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
       Architectures:
         - x86_64
       Events:
@@ -59,6 +78,10 @@ Resources:
       CodeUri: ./src
       Handler: locker.getClaimedLockersHandler
       Runtime: nodejs14.x
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
       Architectures:
         - x86_64
       Events:
@@ -73,6 +96,10 @@ Resources:
       CodeUri: ./src
       Handler: locker.claimLockerHandler
       Runtime: nodejs14.x
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
       Architectures:
         - x86_64
       Events:
@@ -84,6 +111,7 @@ Resources:
   DynamoDBLockerTable:
     Type: AWS::DynamoDB::Table
     Properties:
+      TableName: !Ref TableName
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S

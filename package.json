@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "build": "pnpm build -r",
-    "dev": "pnpm dev -r",
+    "dev": "pnpm start-db -r && pnpm dev -r && pnpm stop-db -r",
     "delete": "pnpm delete -r",
-    "deploy": "pnpm deploy -r"
+    "deploy": "pnpm build -r && pnpm deploy -r"
   },
   "repository": {
     "type": "git",

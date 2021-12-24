@@ -2,7 +2,7 @@
   "name": "ssu-it-locker-frontend",
   "version": "0.0.1",
   "scripts": {
-    "dev": "svelte-kit dev --port 5000",
+    "dev": "cross-env VITE_BASE_URL=http://localhost:3000 svelte-kit dev --port 5000",
     "build": "svelte-kit build",
     "package": "svelte-kit package",
     "preview": "svelte-kit preview",
@@ -16,6 +16,7 @@
     "@sveltejs/kit": "next",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
