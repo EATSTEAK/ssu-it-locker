@@ -7,7 +7,7 @@ Just a toy project with AWS. It'll never be official. Not related with SSU IT Co
  - [X] Create simple validation and obtaining id from SSU SSO
  - [X] Simple frontend with sso login PoC
  - [X] Deploy Mocked Lambda functions to AWS with SAM
- - [ ] Local testing env w/ DynamoDB
+ - [X] Local testing env w/ DynamoDB
  - [ ] Make Connection with DynamoDB and create session auth with it
  - [ ] Create S3 Bucket with SAM CloudFormation template
  - [ ] Deploy static svelte frontend to S3 Bucket
