@@ -5,9 +5,10 @@
   "private": true,
   "scripts": {
     "build": "pnpm build -r",
-    "dev": "pnpm start-db -r && pnpm dev -r && pnpm stop-db -r",
-    "delete": "pnpm delete -r",
-    "deploy": "pnpm build -r && pnpm deploy -r"
+    "dev": "pnpm create-network --if-present && pnpm start-db -r && pnpm dev -r",
+    "create-network": "docker network create local-dev",
+    "delete": "pnpm delete --filter=*-frontend && pnpm delete --filter=*-lambda",
+    "deploy": "pnpm deploy --filter=*-lambda && pnpm deploy --filter=*-frontend"
   },
   "repository": {
     "type": "git",
