@@ -1,9 +1,13 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import { variables } from '$lib/variables';
-  const result = $page.query.get('result');
+  import { onMount } from "svelte";
   const baseUrl = variables.baseUrl ?? '';
-  const id = fetch(baseUrl + '/auth/callback?result=' + encodeURIComponent(result)).then((res) => res.json());
+  let result;
+  let id;
+  onMount(() => {
+    result = new URLSearchParams(window.location.search).get('result');
+    id = fetch(baseUrl + '/api/auth/callback?result=' + encodeURIComponent(result)).then((res) => res.json());
+  });
 </script>
 
 <h1>SSU Auth result.</h1>
