@@ -9,12 +9,14 @@ Just a toy project with AWS. It'll never be official. Not related with SSU IT Co
  - [X] Deploy Mocked Lambda functions to AWS with SAM
  - [X] Local testing env w/ DynamoDB
  - [ ] Make Connection with DynamoDB and create session auth with it
- - [ ] Create S3 Bucket with SAM CloudFormation template
- - [ ] Deploy static svelte frontend to S3 Bucket
- - [ ] Create CloudFront with CloudFormation and connect route for it
- - [ ] Create Proxy with API Gateway with Lambda and S3 Bucket with frontend
+ - [X] Create S3 Bucket with SAM CloudFormation template
+ - [X] Deploy static svelte frontend to S3 Bucket
+ - [X] Create CloudFront with CloudFormation and connect route for it
+ - [X] Create Proxy with API Gateway with Lambda and S3 Bucket with frontend
  - [ ] Create beautiful frontend with svelte-material-ui
  - [ ] Make administration page
+ - [ ] Create Custom endpoint url for service
+ - [ ] Organize Script for deployment/deletion
 
 ## Used Techs
 * Many AWS Services, this service is deeply integrated with AWS.
