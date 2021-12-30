@@ -4,11 +4,10 @@
   "description": "SSU IT Collage Locker system.",
   "private": true,
   "scripts": {
-    "build": "pnpm build -r",
-    "dev": "pnpm create-network --if-present && pnpm start-db -r && pnpm dev -r",
-    "create-network": "docker network create local-dev",
-    "delete": "pnpm delete --filter=*-frontend && pnpm delete --filter=*-lambda",
-    "deploy": "pnpm deploy --filter=*-lambda && pnpm deploy --filter=*-frontend"
+    "build": "pnpm build -r --stream",
+    "dev": "pnpm dev -r --stream",
+    "delete": "pnpm delete --filter=*-frontend && pnpm delete --filter=*-lambda --stream",
+    "deploy": "pnpm deploy --filter=*-lambda && pnpm deploy --filter=*-frontend --stream"
   },
   "repository": {
     "type": "git",

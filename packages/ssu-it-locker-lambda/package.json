@@ -8,8 +8,8 @@
   "license": "MIT",
   "scripts": {
     "build": "sam build",
-    "dev": "sam build && cross-env AWS_SAM_LOCAL=true sam local start-api --docker-network local-dev",
-    "start-db": "docker-compose down && docker-compose up -d && aws dynamodb create-table --region ap-southeast-2 --endpoint http://localhost:8000 --cli-input-json file://db-table-cli.json",
+    "dev": "pnpm start-db && sam build && cross-env AWS_SAM_LOCAL=true sam local start-api --docker-network local-dev",
+    "start-db": "(docker network create local-dev || echo created) && docker-compose down && docker-compose up -d && aws dynamodb create-table --region ap-southeast-2 --endpoint http://localhost:8000 --cli-input-json file://db-table-cli.json",
     "stop-db": "docker-compose down",
     "test": "mocha tests/unit",
     "integ-test": "mocha tests/integration",
