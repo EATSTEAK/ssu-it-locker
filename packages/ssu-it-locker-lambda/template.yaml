@@ -31,7 +31,7 @@ Resources:
   CallbackFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ./src
+      CodeUri: ./dist
       Handler: auth.callbackHandler
       Runtime: nodejs14.x
       Layers:
@@ -51,7 +51,7 @@ Resources:
   LogoutFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ./src
+      CodeUri: ./dist
       Handler: auth.logoutHandler
       Runtime: nodejs14.x
       Layers:
@@ -71,7 +71,7 @@ Resources:
   GetLockerFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ./src
+      CodeUri: ./dist
       Handler: locker.getLockerHandler
       Runtime: nodejs14.x
       Layers:
@@ -91,7 +91,7 @@ Resources:
   GetClaimedLockersFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ./src
+      CodeUri: ./dist
       Handler: locker.getClaimedLockersHandler
       Runtime: nodejs14.x
       Layers:
@@ -111,7 +111,7 @@ Resources:
   ClaimLockerFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ./src
+      CodeUri: ./dist
       Handler: locker.claimLockerHandler
       Runtime: nodejs14.x
       Layers:
