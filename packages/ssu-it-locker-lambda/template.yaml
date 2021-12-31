@@ -131,6 +131,7 @@ Resources:
   DynamoDBLockerTable:
     Type: AWS::DynamoDB::Table
     DeletionPolicy: 'Retain'
+    UpdateReplacePolicy: 'Retain'
     Properties:
       TableName: !Ref TableName
       AttributeDefinitions:
@@ -139,9 +140,7 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
+      BillingMode: 'PAY_PER_REQUEST'
   FrontS3Bucket:
     DeletionPolicy: 'Delete'
     Metadata:

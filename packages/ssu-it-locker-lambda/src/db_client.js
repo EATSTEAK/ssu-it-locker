@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const awsRegion = process.env.AWS_REGION ?? "ap-southeast-2";
-const tableName = process.env.TABLE_NAME ?? "LockerTable";
+const TableName = process.env.TABLE_NAME ?? "LockerTable";
 
 let options = {
   apiVersion: "2012-08-10",
@@ -15,7 +15,7 @@ const dynamoDB = new AWS.DynamoDB(options);
 
 exports.dbTest = async function () {
   try {
-    const res = await dynamoDB.listTables().promise();
+    const res = await dynamoDB.describeTable({ TableName }).promise();
     console.log(JSON.stringify(res));
   } catch (e) {
     console.error(e);
