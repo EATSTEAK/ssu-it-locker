@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-import type { ClientApiVersions } from 'aws-sdk/clients/dynamodb';
+import type { ClientApiVersions, UpdateItemInput } from 'aws-sdk/clients/dynamodb';
 
 const awsRegion = process.env.AWS_REGION ?? 'ap-southeast-2';
 const TableName = process.env.TABLE_NAME ?? 'LockerTable';
@@ -16,11 +16,42 @@ if (process.env.AWS_SAM_LOCAL) {
 
 const dynamoDB = new AWS.DynamoDB(options);
 
-export const dbTest = async function () {
-	try {
-		const res = await dynamoDB.describeTable({ TableName }).promise();
-		console.log(JSON.stringify(res));
-	} catch (e) {
-		console.error(e);
+export const revokeToken = async function (
+	id: string,
+	token: string
+): Promise<{ success: boolean; access_token: string }> {
+	const req: UpdateItemInput = {
+		TableName,
+		Key: { id: { S: id } },
+		UpdateExpression: 'REMOVE access_token',
+		ConditionExpression: 'access_token = :token',
+		ExpressionAttributeValues: {
+			':token': { S: token }
+		},
+		ReturnValues: 'UPDATED_OLD'
+	};
+	const res = await dynamoDB.updateItem(req).promise();
+	if (res.Attributes.hasOwnProperty('access_token')) {
+		return { success: true, access_token: token };
+	} else {
+		return { success: false, access_token: token };
 	}
+};
+
+export const issueToken = async function (
+	id: string,
+	token: string
+): Promise<{ success: boolean; id: string; expires: number }> {
+	const expires = Date.now() + 3600 * 1000;
+	const req: UpdateItemInput = {
+		TableName,
+		Key: { id: { S: id } },
+		UpdateExpression: 'SET access_token = :token, expires_on = :expires_on',
+		ExpressionAttributeValues: {
+			':token': { S: token },
+			':expires_on': { N: `${expires}` }
+		}
+	};
+	await dynamoDB.updateItem(req).promise();
+	return { success: true, id, expires };
 };

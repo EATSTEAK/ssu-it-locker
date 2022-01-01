@@ -1,6 +1,15 @@
+import * as dotenv from 'dotenv';
 import https from 'https';
-import * as dbClient from './db_client';
+import { issueToken, revokeToken } from './db_client';
 import type { APIGatewayProxyHandler } from 'aws-lambda';
+import type { JwtPayload } from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
+import { JWT_SECRET } from './env';
+import { createResponse } from './common';
+
+dotenv.config();
+
+class UnauthorizedError extends Error {}
 
 function requestBody(result: string): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -22,68 +31,73 @@ function requestBody(result: string): Promise<string> {
 }
 
 async function obtainId(result: string) {
-	try {
-		const body = await requestBody(encodeURIComponent(result));
-		if (body.indexOf('pseudonym_session_unique_id') < 0) {
-			return { success: false, code: 401, reason: 'Unauthorized' };
-		}
-		const id = body.substring(body.indexOf('pseudonym_session_unique_id') + 36).split('"')[0];
-		return { success: true, code: 200, id };
-	} catch (err) {
-		return { success: false, code: 500, reason: 'Internal Error' };
+	const body = await requestBody(encodeURIComponent(result));
+	if (body.indexOf('pseudonym_session_unique_id') < 0) {
+		throw new UnauthorizedError('Unauthorized');
 	}
+	return body.substring(body.indexOf('pseudonym_session_unique_id') + 36).split('"')[0];
 }
-
-let response;
 
 export const callbackHandler: APIGatewayProxyHandler = async (event, context) => {
 	try {
 		const result = event?.queryStringParameters?.result;
 		if (result) {
 			console.log(result);
-			const id = await obtainId(result);
-			return {
-				statusCode: id.code,
-				body: JSON.stringify(id),
-				headers: {
-					'Access-Control-Allow-Origin': '*'
+			try {
+				const id = await obtainId(result);
+				const accessToken = jwt.sign({ sub: id }, JWT_SECRET, {
+					expiresIn: 3600 * 1000
+				});
+				const issued = await issueToken(id, accessToken);
+				const left = Math.floor((issued.expires - Date.now()) / 1000);
+				const response = {
+					success: true,
+					access_token: accessToken,
+					token_type: 'Bearer',
+					expires_in: left,
+					id
+				};
+				return createResponse(200, response);
+			} catch (e) {
+				if (!(e instanceof UnauthorizedError)) {
+					console.error(e);
+					const response = {
+						success: false,
+						error: 500,
+						error_description: 'Internal error'
+					};
+					return createResponse(500, response);
 				}
-			};
-		}
-		return {
-			statusCode: 401,
-			body: JSON.stringify({
-				success: false,
-				reason: 'Unauthorized'
-			}),
-			headers: {
-				'Access-Control-Allow-Origin': '*'
 			}
+		}
+		const response = {
+			success: false,
+			error: 401,
+			error_description: 'Unauthorized'
 		};
+		return createResponse(401, response);
 	} catch (err: unknown) {
 		console.error('Error Thrown:', err);
-		return {
-			statusCode: 500,
-			body: JSON.stringify({
-				success: false,
-				reason: 'Internal Error'
-			}),
-			headers: {
-				'Access-Control-Allow-Origin': '*'
-			}
+		const response = {
+			success: false,
+			error: 500,
+			error_description: 'Internal error'
 		};
+		return createResponse(500, response);
 	}
 };
 
 export const logoutHandler: APIGatewayProxyHandler = async (event, context) => {
-	await dbClient.dbTest();
-	return {
-		statusCode: 200,
-		body: JSON.stringify({
-			success: true
-		}),
-		headers: {
-			'Access-Control-Allow-Origin': '*'
-		}
-	};
+	const token = (event.headers.Authorization ?? '').replace('Bearer ', '');
+	try {
+		const payload = jwt.verify(token, JWT_SECRET) as JwtPayload;
+		const res = await revokeToken(payload.sub, token);
+		return createResponse(200, res);
+	} catch (err) {
+		const res = {
+			success: false,
+			token
+		};
+		return createResponse(401, res);
+	}
 };

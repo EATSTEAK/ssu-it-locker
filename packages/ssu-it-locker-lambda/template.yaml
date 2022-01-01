@@ -178,7 +178,7 @@ Resources:
           HeadersConfig:
             HeaderBehavior: 'whitelist'
             Headers:
-              - 'Authentication'
+              - 'Authorization'
           QueryStringsConfig:
             QueryStringBehavior: 'all'
           EnableAcceptEncodingBrotli: true
