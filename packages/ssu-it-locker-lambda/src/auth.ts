@@ -5,8 +5,7 @@ import type { JwtPayload } from 'jsonwebtoken';
 import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from './env';
 import { createResponse } from './common';
-
-class UnauthorizedError extends Error {}
+import { ResponsibleError, UnauthorizedError } from './error';
 
 function requestBody(result: string): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -35,65 +34,53 @@ async function obtainId(result: string) {
 	return body.substring(body.indexOf('pseudonym_session_unique_id') + 36).split('"')[0];
 }
 
-export const callbackHandler: APIGatewayProxyHandler = async (event, context) => {
+export const callbackHandler: APIGatewayProxyHandler = async (event) => {
 	try {
 		const result = event?.queryStringParameters?.result;
 		if (result) {
 			console.log(result);
-			try {
-				const id = await obtainId(result);
-				const accessToken = jwt.sign({ sub: id }, JWT_SECRET, {
-					expiresIn: 3600 * 1000
-				});
-				const issued = await issueToken(id, accessToken);
-				const left = Math.floor((issued.expires - Date.now()) / 1000);
-				const response = {
-					success: true,
-					access_token: accessToken,
-					token_type: 'Bearer',
-					expires_in: left,
-					id
-				};
-				return createResponse(200, response);
-			} catch (e) {
-				if (!(e instanceof UnauthorizedError)) {
-					console.error(e);
-					const response = {
-						success: false,
-						error: 500,
-						error_description: 'Internal error'
-					};
-					return createResponse(500, response);
-				}
-			}
+			const id = await obtainId(result);
+			const accessToken = jwt.sign({ aud: id }, JWT_SECRET, {
+				expiresIn: 3600 * 1000
+			});
+			const issued = await issueToken(id, accessToken);
+			const left = Math.floor((issued.expires - Date.now()) / 1000);
+			const res = {
+				success: true,
+				id,
+				access_token: accessToken,
+				token_type: 'Bearer',
+				expires_in: left
+			};
+			return createResponse(200, { success: true, ...res });
 		}
-		const response = {
-			success: false,
-			error: 401,
-			error_description: 'Unauthorized'
-		};
-		return createResponse(401, response);
-	} catch (err: unknown) {
-		console.error('Error Thrown:', err);
-		const response = {
-			success: false,
-			error: 500,
-			error_description: 'Internal error'
-		};
-		return createResponse(500, response);
+		return new UnauthorizedError('Unauthorized').response();
+	} catch (e) {
+		if (!(e instanceof ResponsibleError)) {
+			console.error(e);
+			const res = {
+				success: false,
+				error: 500,
+				error_description: 'Internal error'
+			};
+			return createResponse(500, res);
+		}
+		return e.response();
 	}
 };
 
-export const logoutHandler: APIGatewayProxyHandler = async (event, context) => {
+export const logoutHandler: APIGatewayProxyHandler = async (event) => {
 	const token = (event.headers.Authorization ?? '').replace('Bearer ', '');
 	try {
 		const payload = jwt.verify(token, JWT_SECRET) as JwtPayload;
-		const res = await revokeToken(payload.sub, token);
-		return createResponse(200, res);
+		const res = await revokeToken(payload.aud as string, token);
+		return createResponse(200, { success: true, ...res });
 	} catch (err) {
 		const res = {
 			success: false,
-			token
+			token,
+			error: 401,
+			error_description: 'Unauthorized'
 		};
 		return createResponse(401, res);
 	}

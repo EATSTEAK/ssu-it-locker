@@ -68,26 +68,6 @@ Resources:
           Properties:
             Path: /api/auth/logout
             Method: get
-  GetLockerFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: ./dist
-      Handler: locker.getLockerHandler
-      Runtime: nodejs14.x
-      Layers:
-        - !Ref DependenciesLayer
-      Policies:
-        - AWSLambdaExecute
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TableName
-      Architectures:
-        - x86_64
-      Events:
-        GetLocker:
-          Type: Api
-          Properties:
-            Path: /api/locker/get
-            Method: get
   GetClaimedLockersFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -106,7 +86,7 @@ Resources:
         GetAllLockers:
           Type: Api
           Properties:
-            Path: /api/locker/all
+            Path: /api/locker/list
             Method: get
   ClaimLockerFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -128,6 +108,46 @@ Resources:
           Properties:
             Path: /api/locker/claim
             Method: post
+  GetUserInfoFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./dist
+      Handler: user.getUserInfoHandler
+      Runtime: nodejs14.x
+      Layers:
+        - !Ref DependenciesLayer
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
+      Architectures:
+        - x86_64
+      Events:
+        GetUserInfo:
+          Type: Api
+          Properties:
+            Path: /api/user/get
+            Method: get
+  UpdateUserInfoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: user.updateUserInfoHandler
+      Runtime: nodejs14.x
+      Layers:
+        - !Ref DependenciesLayer
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
+      Architectures:
+        - x86_64
+      Events:
+        UpdateUserInfo:
+          Type: Api
+          Properties:
+            Path: /api/user/update
+            Method: post
   DynamoDBLockerTable:
     Type: AWS::DynamoDB::Table
     DeletionPolicy: 'Retain'
@@ -137,9 +157,22 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
+        - AttributeName: lockerId
+          AttributeType: S
       KeySchema:
         - AttributeName: id
           KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: lockerIdIndex
+          KeySchema:
+            - AttributeName: id
+              KeyType: HASH
+            - AttributeName: lockerId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: INCLUDE
+            NonKeyAttributes:
+              - claimedUntil
       BillingMode: 'PAY_PER_REQUEST'
   FrontS3Bucket:
     DeletionPolicy: 'Delete'
@@ -202,8 +235,6 @@ Resources:
           EnableAcceptEncodingGzip: true
     Type: 'AWS::CloudFront::CachePolicy'
   CfDistribution:
-    Metadata:
-      Comment: 'A simple CloudFront distribution with an S3 origin'
     Properties:
       DistributionConfig:
         Comment: 'A simple distribution with an S3 origin'

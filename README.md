@@ -14,7 +14,7 @@ Just a toy project with AWS. It'll never be official. Not related with SSU IT Co
 - [X] Deploy static svelte frontend to S3 Bucket
 - [X] Create CloudFront with CloudFormation and connect route for it
 - [X] Create Proxy with API Gateway with Lambda and S3 Bucket with frontend
-- [ ] Create reservation feature
+- [X] Create reservation feature
 - [ ] Create beautiful frontend with svelte-material-ui
 - [ ] Make administration page
 - [ ] Create Custom endpoint url for service

@@ -1,17 +1,46 @@
 {
-    "TableName": "LockerTable",
-    "AttributeDefinitions": [
+  "TableName": "LockerTable",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "lockerFloor",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "lockerId",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "lockerIdIndex",
+      "KeySchema": [
         {
-            "AttributeName": "id",
-            "AttributeType": "S"
-        }
-    ],
-    "KeySchema": [
+          "AttributeName": "lockerFloor",
+          "KeyType": "HASH"
+        },
         {
-            "AttributeName": "id",
-            "KeyType": "HASH"
+          "AttributeName": "lockerId",
+          "KeyType": "RANGE"
         }
-    ],
-    "BillingMode": "PAY_PER_REQUEST",
-    "TableClass": "STANDARD"
+      ],
+      "Projection": {
+        "ProjectionType": "INCLUDE",
+        "NonKeyAttributes": [
+          "claimedUntil"
+        ]
+      }
+    }
+  ],
+  "BillingMode": "PAY_PER_REQUEST",
+  "TableClass": "STANDARD"
 }
