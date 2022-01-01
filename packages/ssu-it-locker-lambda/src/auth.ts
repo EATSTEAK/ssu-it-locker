@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import https from 'https';
 import { issueToken, revokeToken } from './db_client';
 import type { APIGatewayProxyHandler } from 'aws-lambda';
@@ -6,8 +5,6 @@ import type { JwtPayload } from 'jsonwebtoken';
 import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from './env';
 import { createResponse } from './common';
-
-dotenv.config();
 
 class UnauthorizedError extends Error {}
 
