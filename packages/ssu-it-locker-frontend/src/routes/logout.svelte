@@ -5,6 +5,7 @@
 	import { fetchWithAuth } from '$lib/utils';
 
 	const baseUrl = variables.baseUrl ?? '';
+
 	let id;
 	onMount(() => {
 		id = fetchWithAuth(baseUrl + '/api/auth/logout', { method: 'GET' }).then((res) => res.json());
@@ -14,6 +15,10 @@
 		});
 	});
 </script>
+
+<svelte:head>
+	<title>IT대학 사물함 예약 시스템 - 로그아웃</title>
+</svelte:head>
 
 <main class='d-inline-flex flex-column justify-content-center align-content-start'>
 	<section>

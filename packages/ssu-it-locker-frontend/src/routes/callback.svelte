@@ -10,11 +10,15 @@
 		result = new URLSearchParams(window.location.search).get('result');
 		id = fetch(baseUrl + '/api/auth/callback?result=' + encodeURIComponent(result)).then((res) => res.json());
 		id.then((data) => {
-			document.cookie = `ssulocker_session=${encodeURIComponent(data.access_token)}; domain=${window.location.hostname}; max-age=${data.expires_in}; samesite=lax`;
+			document.cookie = `ssulocker_session=${encodeURIComponent(data.access_token)}; path=/; domain=${window.location.hostname}; max-age=${data.expires_in}; samesite=lax`;
 			window.location.href = '/reserve';
 		});
 	});
 </script>
+
+<svelte:head>
+	<title>IT대학 사물함 예약 시스템 - 로그인 중</title>
+</svelte:head>
 
 <main class='d-inline-flex flex-column justify-content-center align-content-start'>
 	<section>

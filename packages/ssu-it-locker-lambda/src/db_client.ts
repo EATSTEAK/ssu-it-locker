@@ -14,7 +14,7 @@ import { CantClaimError, ResponsibleError, UnauthorizedError } from './error';
 type UserInfo = {
 	id: string;
 	isAdmin: boolean;
-	department: string;
+	department: 'E' | 'A' | 'C' | 'S' | 'G';
 	lockerFloor?: string;
 	lockerId?: string;
 	claimedUntil?: number;
@@ -176,7 +176,7 @@ export const getUserInfo = async function (id: string): Promise<UserInfo> {
 	const ret: UserInfo = {
 		id: id,
 		isAdmin: res.Item.isAdmin?.BOOL ?? false,
-		department: res.Item.department?.S
+		department: res.Item.department?.S as 'E' | 'A' | 'C' | 'S' | 'G'
 	};
 	if (res.Item.lockerFloor?.S) ret.lockerFloor = res.Item.lockerFloor.S;
 	if (res.Item.lockerId?.S) ret.lockerId = res.Item.lockerId.S;

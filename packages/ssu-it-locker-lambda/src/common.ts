@@ -1,4 +1,5 @@
 import type { APIGatewayProxyResult } from 'aws-lambda';
+import lockerData from './lockers.json';
 
 export function createResponse(statusCode: number, body: string | object): APIGatewayProxyResult {
 	const stringifyBody = typeof body === 'string' ? body : JSON.stringify(body);
@@ -13,4 +14,33 @@ export function createResponse(statusCode: number, body: string | object): APIGa
 		res.headers['Access-Control-Allow-Origin'] = '*';
 	}
 	return res;
+}
+
+type LockerMap = {
+	[floor: string]: {
+		[section: string]: {
+			range: number[];
+			department: 'E' | 'A' | 'C' | 'S' | 'G';
+		};
+	};
+};
+
+export const lockers: LockerMap = lockerData as LockerMap;
+
+export function isValidLocker(
+	lockerFloor: string,
+	lockerId: string,
+	department?: 'E' | 'A' | 'C' | 'S' | 'G'
+): boolean {
+	const parsedLockerId = lockerId.split('-');
+	const lockerSectionNum = parseInt(parsedLockerId[1]);
+	const selectedSection = lockers?.[lockerFloor]?.[parsedLockerId[0]];
+	if (parsedLockerId.length !== 2) return false;
+	if (
+		!selectedSection ||
+		selectedSection.range[0] > lockerSectionNum ||
+		selectedSection.range[1] < lockerSectionNum
+	)
+		return false;
+	return !(department && department !== selectedSection.department);
 }

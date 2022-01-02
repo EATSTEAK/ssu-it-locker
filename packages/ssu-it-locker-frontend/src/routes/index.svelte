@@ -14,6 +14,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>IT대학 사물함 예약 시스템</title>
+</svelte:head>
+
 <main class='d-inline-flex flex-column justify-content-center align-content-start'>
 	<section>
 		<Card class='m-3 p-2 shadow-lg'>

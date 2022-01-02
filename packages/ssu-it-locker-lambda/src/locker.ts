@@ -1,5 +1,5 @@
 import type { APIGatewayProxyHandler } from 'aws-lambda';
-import { createResponse } from './common';
+import { createResponse, isValidLocker } from './common';
 import { claimLocker, queryLockers, revokeLocker } from './db_client';
 import type { JwtPayload } from 'jsonwebtoken';
 import * as jwt from 'jsonwebtoken';
@@ -75,6 +75,13 @@ export const claimLockerHandler: APIGatewayProxyHandler = async (event) => {
 			success: false,
 			error: 500,
 			error_description: 'Key "locker_floor" and "locker_id" are must be given'
+		});
+	}
+	if (!isValidLocker(data.locker_floor, data.locker_id)) {
+		return createResponse(500, {
+			success: false,
+			error: 500,
+			error_description: 'Unknown locker data'
 		});
 	}
 	if (data.until !== undefined && typeof data.until !== 'number') {
