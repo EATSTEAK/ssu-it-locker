@@ -1,4 +1,19 @@
-/* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */ /* Import only what you need from Bootstrap */
+/* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */
+/* Import only what you need from Bootstrap */
+html, body {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+html {
+  box-sizing: border-box;
+  border-collapse: collapse;
+}
+
+#svelte {
+  height: 100%;
+}
+
 @import 'bootstrap/scss/root';
 @import 'bootstrap/scss/reboot';
 @import 'bootstrap/scss/type';
