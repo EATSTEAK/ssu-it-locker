@@ -35,6 +35,19 @@ export const getClaimedLockersHandler: APIGatewayProxyHandler = async (event) =>
 		result
 	});
 };
+export const getClaimedLockerCountHandler: APIGatewayProxyHandler = async (event) => {
+	// mocked response
+	return createResponse(200, {
+		success: true,
+		result: {
+			E: 140,
+			A: 200,
+			C: 20,
+			S: 0,
+			G: 1
+		}
+	});
+};
 
 export const claimLockerHandler: APIGatewayProxyHandler = async (event) => {
 	const token = (event.headers.Authorization ?? '').replace('Bearer ', '');

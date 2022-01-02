@@ -10,6 +10,9 @@ Parameters:
     Type: String
     Description: DynamoDB Table name for user, locker information.
     Default: 'LockerTable'
+  AwsSamLocal:
+    Type: String
+    Default: ''
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -17,7 +20,56 @@ Globals:
     Environment:
       Variables:
         TABLE_NAME: !Ref TableName
+        AWS_SAM_LOCAL: !Ref AwsSamLocal
+Conditions:
+  IsSamLocal: !Equals
+    - !Ref AwsSamLocal
+    - true
 Resources:
+  LocalCorsFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./dist
+      Handler: common.localCorsHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        AuthCallback:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/auth/callback
+            Method: options
+        AuthLogout:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/auth/logout
+            Method: options
+        LockerList:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/locker/list
+            Method: options
+        LockerClaim:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/locker/claim
+            Method: options
+        LockerCount:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/locker/count
+            Method: options
+        UserGet:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/get
+            Method: options
+        UserUpdate:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /api/user/update
+            Method: options
   DependenciesLayer:
     Type: AWS::Serverless::LayerVersion
     Metadata:
@@ -28,7 +80,7 @@ Resources:
       CompatibleRuntimes:
         - nodejs14.x
   # Backend Lambda Resources
-  CallbackFunction:
+  AuthCallbackFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./dist
@@ -43,12 +95,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        SsuLogin:
+        AuthCallback:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /api/auth/callback
             Method: get
-  LogoutFunction:
+  AuthLogoutFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./dist
@@ -63,12 +115,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        Logout:
+        AuthLogout:
           Type: Api
           Properties:
             Path: /api/auth/logout
             Method: get
-  GetClaimedLockersFunction:
+  LockerListFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./dist
@@ -83,12 +135,32 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        GetAllLockers:
+        LockerList:
           Type: Api
           Properties:
             Path: /api/locker/list
             Method: get
-  ClaimLockerFunction:
+  LockerCountFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./dist
+      Handler: locker.getClaimedLockerCountHandler
+      Runtime: nodejs14.x
+      Layers:
+        - !Ref DependenciesLayer
+      Policies:
+        - AWSLambdaExecute
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
+      Architectures:
+        - x86_64
+      Events:
+        LockerCount:
+          Type: Api
+          Properties:
+            Path: /api/locker/count
+            Method: get
+  LockerClaimFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./dist
@@ -103,12 +175,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        ClaimLocker:
+        LockerClaim:
           Type: Api
           Properties:
             Path: /api/locker/claim
             Method: post
-  GetUserInfoFunction:
+  UserGetFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./dist
@@ -123,12 +195,12 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        GetUserInfo:
+        UserGet:
           Type: Api
           Properties:
             Path: /api/user/get
             Method: get
-  UpdateUserInfoFunction:
+  UserUpdateFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./dist
@@ -143,7 +215,7 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        UpdateUserInfo:
+        UserUpdate:
           Type: Api
           Properties:
             Path: /api/user/update

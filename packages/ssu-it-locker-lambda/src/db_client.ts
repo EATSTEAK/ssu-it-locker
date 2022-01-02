@@ -6,6 +6,7 @@ import type {
 	ExpressionAttributeValueMap,
 	GetItemInput,
 	QueryInput,
+	ScanInput,
 	UpdateItemInput,
 	WriteRequest
 } from 'aws-sdk/clients/dynamodb';
@@ -306,4 +307,12 @@ export const batchCreateUserInfo = async function (
 	};
 	await dynamoDB.batchWriteItem(req).promise();
 	return infos;
+};
+
+export const getClaimedLockers = async function () {
+	const req: ScanInput = {
+		TableName,
+		IndexName: 'lockerIdIndex'
+	};
+	const res = await dynamoDB.scan().promise();
 };
