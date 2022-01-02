@@ -21,7 +21,7 @@ type LockerMap = {
 		[section: string]: {
 			range: number[];
 			department: 'E' | 'A' | 'C' | 'S' | 'G';
-		};
+		}[];
 	};
 };
 
@@ -34,13 +34,14 @@ export function isValidLocker(
 ): boolean {
 	const parsedLockerId = lockerId.split('-');
 	const lockerSectionNum = parseInt(parsedLockerId[1]);
-	const selectedSection = lockers?.[lockerFloor]?.[parsedLockerId[0]];
+	const selectedSections = lockers?.[lockerFloor]?.[parsedLockerId[0]];
 	if (parsedLockerId.length !== 2) return false;
-	if (
-		!selectedSection ||
-		selectedSection.range[0] > lockerSectionNum ||
-		selectedSection.range[1] < lockerSectionNum
-	)
-		return false;
-	return !(department && department !== selectedSection.department);
+	if (!selectedSections) return false;
+	const section = selectedSections.find(
+		(sect) =>
+			sect.range[0] <= lockerSectionNum &&
+			sect.range[1] >= lockerSectionNum &&
+			(department === undefined || department === sect.department)
+	);
+	return section !== undefined;
 }

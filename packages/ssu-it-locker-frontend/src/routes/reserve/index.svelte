@@ -17,22 +17,10 @@
 		TabPane
 	} from 'sveltestrap';
 	import { onMount } from 'svelte';
-	import { fetchWithAuth, getDepartment, parseFloor, range } from '$lib/utils';
+	import { fetchWithAuth, getDepartment, LockerMap, parseFloor, range } from "$lib/utils";
 	import { variables } from '$lib/variables';
 	import lockerData from '../../lockers.json';
 
-	type LockerMap = {
-		[floor: string]: FloorMap;
-	};
-
-	type FloorMap = {
-		[section: string]: SectionMap;
-	}
-
-	type SectionMap = {
-		range: number[];
-		department: 'E' | 'A' | 'C' | 'S' | 'G';
-	}
 
 	const lockers: LockerMap = lockerData as LockerMap;
 
@@ -86,18 +74,20 @@
 			</section>
 			<section>
 				<h1>예약하기</h1>
-				<TabContent pills class='nav-fill'>
+				<TabContent vertical pills class='nav-fill'>
 					{#each Object.entries(lockers) as [floorKey, floor], i}
 						<TabPane tabId='{floorKey}' tab='{parseFloor(floorKey)}' active='{i === 0}'>
-							{#each Object.entries(floor) as [sectionKey, section], i}
+							{#each Object.entries(floor) as [sectionKey, sections]}
 								<div id='{sectionKey}'>
 									<h2>{sectionKey}</h2>
-									<h5>{getDepartment(section.department)}</h5>
-									<div class='d-inline-flex flex-wrap justify-content-between'>
-										{#each range(section.range[1] - section.range[0] + 1, section.range[0]) as num}
-											<Button>{floorKey}-{sectionKey}-{`${num}`.padStart(3, '0')}</Button>
-										{/each}
-									</div>
+									{#each sections as section}
+										<h5>{getDepartment(section.department)}</h5>
+										<div class='d-inline-flex flex-wrap justify-content-between'>
+											{#each range(section.range[1] - section.range[0] + 1, section.range[0]) as num}
+												<Button>{floorKey}-{sectionKey}-{`${num}`.padStart(3, '0')}</Button>
+											{/each}
+										</div>
+									{/each}
 								</div>
 							{/each}
 						</TabPane>

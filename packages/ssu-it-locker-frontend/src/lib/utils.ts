@@ -12,6 +12,15 @@ export const fetchWithAuth = (resource: RequestInfo, init?: RequestInit) =>
 		}
 	});
 
+export type LockerMap = {
+	[floor: string]: {
+		[section: string]: {
+			range: number[];
+			department: 'E' | 'A' | 'C' | 'S' | 'G';
+		}[];
+	};
+};
+
 export const getDepartment = (department: 'E' | 'A' | 'C' | 'S' | 'G'): string =>
 	({
 		E: '전자정보공학부',
