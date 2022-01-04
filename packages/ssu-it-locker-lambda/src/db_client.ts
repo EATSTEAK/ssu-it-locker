@@ -309,10 +309,14 @@ export const batchCreateUserInfo = async function (
 	return infos;
 };
 
-export const getClaimedLockers = async function () {
+export const getClaimedLockers = async () => {
 	const req: ScanInput = {
 		TableName,
 		IndexName: 'lockerIdIndex'
 	};
-	const res = await dynamoDB.scan().promise();
+	const res = await dynamoDB.scan(req).promise();
+	return res.Items.map((value) => ({
+		lockerFloor: value.lockerFloor.S,
+		lockerId: value.lockerId.S
+	}));
 };

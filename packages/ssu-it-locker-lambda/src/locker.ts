@@ -1,6 +1,6 @@
 import type { APIGatewayProxyHandler } from 'aws-lambda';
-import { createResponse, isValidLocker } from './common';
-import { claimLocker, queryLockers, revokeLocker } from './db_client';
+import { createResponse, getLockerDepartment, isValidLocker } from './common';
+import { claimLocker, getClaimedLockers, queryLockers, revokeLocker } from './db_client';
 import type { JwtPayload } from 'jsonwebtoken';
 import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from './env';
@@ -35,17 +35,18 @@ export const getClaimedLockersHandler: APIGatewayProxyHandler = async (event) =>
 		result
 	});
 };
-export const getClaimedLockerCountHandler: APIGatewayProxyHandler = async (event) => {
-	// mocked response
+export const getClaimedLockerCountHandler: APIGatewayProxyHandler = async () => {
+	const lockers = await getClaimedLockers();
+	const result = lockers.reduce<{ E: number; A: number; C: number; S: number; G: number }>(
+		(acc, cur) => {
+			acc[getLockerDepartment(cur.lockerFloor, cur.lockerId)] += 1;
+			return acc;
+		},
+		{ E: 0, A: 0, C: 0, S: 0, G: 0 }
+	);
 	return createResponse(200, {
 		success: true,
-		result: {
-			E: 140,
-			A: 200,
-			C: 20,
-			S: 0,
-			G: 1
-		}
+		result
 	});
 };
 
