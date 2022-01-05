@@ -1,7 +1,6 @@
 <script lang='ts'>
 	import {
 		Alert,
-		Button,
 		Card,
 		CardSubtitle,
 		CardTitle,
@@ -17,13 +16,19 @@
 		TabPane
 	} from 'sveltestrap';
 	import { onMount } from 'svelte';
-	import { fetchWithAuth, getDepartment, LockerMap, parseFloor, range } from "$lib/utils";
+	import { fetchWithAuth, getBuilding, getDepartment, LockerMap } from '$lib/utils';
 	import { variables } from '$lib/variables';
 	import lockerData from '../../lockers.json';
+	import LockerFloors from '../../components/reserve/LockerFloors.svelte';
 
 
 	const lockers: LockerMap = lockerData as LockerMap;
 
+	const lockersByBuilding = Object.entries(lockers).reduce((result, v) => {
+		if (result[v[0].split('-')[0]] === undefined) result[v[0].split('-')[0]] = {};
+		result[v[0].split('-')[0]][v[0].split('-')[1]] = v[1];
+		return result;
+	}, {});
 	const baseUrl = variables.baseUrl ?? '';
 
 	let isOpen;
@@ -74,22 +79,10 @@
 			</section>
 			<section>
 				<h1>예약하기</h1>
-				<TabContent vertical pills class='nav-fill'>
-					{#each Object.entries(lockers) as [floorKey, floor], i}
-						<TabPane tabId='{floorKey}' tab='{parseFloor(floorKey)}' active='{i === 0}'>
-							{#each Object.entries(floor) as [sectionKey, sections]}
-								<div id='{sectionKey}'>
-									<h2>{sectionKey}</h2>
-									{#each sections as section}
-										<h5>{getDepartment(section.department)}</h5>
-										<div class='d-inline-flex flex-wrap justify-content-between'>
-											{#each range(section.range[1] - section.range[0] + 1, section.range[0]) as num}
-												<Button>{floorKey}-{sectionKey}-{`${num}`.padStart(3, '0')}</Button>
-											{/each}
-										</div>
-									{/each}
-								</div>
-							{/each}
+				<TabContent pills class='nav-fill'>
+					{#each Object.entries(lockersByBuilding) as [buildingKey, floors], i}
+						<TabPane tabId='{buildingKey}' tab='{getBuilding(buildingKey)}' active='{i === 0}' class='p-2'>
+							<LockerFloors floors={floors} />
 						</TabPane>
 					{/each}
 				</TabContent>
