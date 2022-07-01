@@ -232,12 +232,14 @@ Resources:
         - AttributeName: lockerId
           AttributeType: S
       KeySchema:
-        - AttributeName: id
+        - AttributeName: dept
           KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
       GlobalSecondaryIndexes:
         - IndexName: lockerIdIndex
           KeySchema:
-            - AttributeName: id
+            - AttributeName: dept
               KeyType: HASH
             - AttributeName: lockerId
               KeyType: RANGE

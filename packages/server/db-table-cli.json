@@ -2,11 +2,11 @@
   "TableName": "LockerTable",
   "AttributeDefinitions": [
     {
-      "AttributeName": "id",
+      "AttributeName": "dept",
       "AttributeType": "S"
     },
     {
-      "AttributeName": "lockerFloor",
+      "AttributeName": "id",
       "AttributeType": "S"
     },
     {
@@ -16,8 +16,12 @@
   ],
   "KeySchema": [
     {
-      "AttributeName": "id",
+      "AttributeName": "dept",
       "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "id",
+      "KeyType": "RANGE"
     }
   ],
   "GlobalSecondaryIndexes": [
@@ -25,7 +29,7 @@
       "IndexName": "lockerIdIndex",
       "KeySchema": [
         {
-          "AttributeName": "lockerFloor",
+          "AttributeName": "dept",
           "KeyType": "HASH"
         },
         {
