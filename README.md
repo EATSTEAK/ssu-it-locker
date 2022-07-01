@@ -1,6 +1,6 @@
-# ssu-it-locker (Unofficial)
+# ssu-it-locker
 
-Just a toy project with AWS. It'll never be official. Not related with SSU IT Collage.
+Just a toy project with AWS.
 
 ## To-Dos and Done
 
@@ -15,7 +15,7 @@ Just a toy project with AWS. It'll never be official. Not related with SSU IT Co
 - [X] Create CloudFront with CloudFormation and connect route for it
 - [X] Create Proxy with API Gateway with Lambda and S3 Bucket with frontend
 - [X] Create reservation feature
-- [ ] Create beautiful frontend with svelte-material-ui
+- [ ] Create beautiful frontend with tailwindcss
 - [ ] Make administration page
 - [ ] Create Custom endpoint url for service
 - [X] Organize Script for deployment/deletion
@@ -30,7 +30,6 @@ Just a toy project with AWS. It'll never be official. Not related with SSU IT Co
     * API Gateway
     * CloudFront
     * S3 Bucket
-    * Route 53
 * Used PNPM for Monorepo package manager - It's fast!
 * Svelte(sveltekit) for Frontend - Lightweight and new.
 
