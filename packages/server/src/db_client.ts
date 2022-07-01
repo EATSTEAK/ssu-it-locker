@@ -16,7 +16,6 @@ type UserInfo = {
 	id: string;
 	isAdmin: boolean;
 	department: 'E' | 'A' | 'C' | 'S' | 'G';
-	lockerFloor?: string;
 	lockerId?: string;
 	claimedUntil?: number;
 };
@@ -36,7 +35,7 @@ if (process.env.AWS_SAM_LOCAL) {
 
 const dynamoDB = new AWS.DynamoDB(options);
 
-export const revokeToken = async function (
+export const revokeToken = async function(
 	id: string,
 	token: string
 ): Promise<{ accessToken: string }> {
@@ -58,7 +57,7 @@ export const revokeToken = async function (
 	}
 };
 
-export const issueToken = async function (
+export const issueToken = async function(
 	id: string,
 	token: string
 ): Promise<{ id: string; expires: number }> {
@@ -84,7 +83,7 @@ export const issueToken = async function (
 	}
 };
 
-export const revokeLocker = async function (
+export const revokeLocker = async function(
 	id: string,
 	token: string
 ): Promise<{ id: string; lockerFloor?: string; lockerId?: string }> {
@@ -106,7 +105,7 @@ export const revokeLocker = async function (
 	return { id };
 };
 
-export const claimLocker = async function (
+export const claimLocker = async function(
 	id: string,
 	token: string,
 	lockerFloor: string,
@@ -160,11 +159,11 @@ export const claimLocker = async function (
 		if (res.Attributes?.accessToken?.S !== token) {
 			throw new UnauthorizedError('Unauthorized', { id, lockerId, claimedUntil });
 		}
-		throw new CantClaimError("Can't claim requested locker", { id, lockerId, claimedUntil });
+		throw new CantClaimError('Can\'t claim requested locker', { id, lockerId, claimedUntil });
 	}
 };
 
-export const getUserInfo = async function (id: string): Promise<UserInfo> {
+export const getUserInfo = async function(id: string): Promise<UserInfo> {
 	const req: GetItemInput = {
 		TableName,
 		Key: {
@@ -179,13 +178,12 @@ export const getUserInfo = async function (id: string): Promise<UserInfo> {
 		isAdmin: res.Item.isAdmin?.BOOL ?? false,
 		department: res.Item.department?.S as 'E' | 'A' | 'C' | 'S' | 'G'
 	};
-	if (res.Item.lockerFloor?.S) ret.lockerFloor = res.Item.lockerFloor.S;
 	if (res.Item.lockerId?.S) ret.lockerId = res.Item.lockerId.S;
 	if (res.Item.claimedUntil?.N) ret.claimedUntil = parseInt(res.Item.claimedUntil.N);
 	return ret;
 };
 
-const assertAdmin = async function (modId: string, token: string) {
+const assertAdmin = async function(modId: string, token: string) {
 	const authReq: GetItemInput = {
 		TableName,
 		Key: {
@@ -204,8 +202,8 @@ const assertAdmin = async function (modId: string, token: string) {
 	}
 };
 
-export const queryLockers = async function (
-	lockerFloor: string,
+export const queryLockers = async function(
+	department: string,
 	showId?: boolean,
 	modId?: string,
 	token?: string
@@ -220,12 +218,12 @@ export const queryLockers = async function (
 	const req: QueryInput = {
 		TableName,
 		IndexName: 'lockerIdIndex',
-		KeyConditionExpression: 'lockerFloor = :lockerFloor',
+		KeyConditionExpression: 'department = :department',
 		FilterExpression: 'claimedUntil < :zero OR claimedUntil > :claimedUntil',
 		ExpressionAttributeValues: {
 			':zero': { N: '0' },
 			':claimedUntil': { N: `${Date.now()}` },
-			':lockerFloor': { S: lockerFloor }
+			':department': { S: department }
 		},
 		ProjectionExpression: `lockerId, claimedUntil${showId ? ', id' : ''}`
 	};
@@ -241,7 +239,7 @@ export const queryLockers = async function (
 	});
 };
 
-export const updateUserInfo = async function (
+export const updateUserInfo = async function(
 	modId: string,
 	token: string,
 	info: { id: string; isAdmin?: boolean; department?: string }
@@ -272,7 +270,7 @@ export const updateUserInfo = async function (
 	return ret;
 };
 
-export const batchCreateUserInfo = async function (
+export const batchCreateUserInfo = async function(
 	modId: string,
 	token: string,
 	infos: Array<{ id: string; department: string; isAdmin?: boolean }>

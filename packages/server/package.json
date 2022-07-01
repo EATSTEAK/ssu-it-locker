@@ -1,5 +1,5 @@
 {
-  "name": "ssu-it-locker-lambda",
+  "name": "server",
   "version": "0.0.1",
   "private": true,
   "description": "Backend Lambda script for ssu-it-locker",
@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "(cp -f ../../lockers.json src/ || copy ..\\..\\lockers.json src\\ /y) && tsc --module commonjs --target es5 --outDir dist/ && sam build",
-    "dev": "pnpm start-db && sam build && cross-env AWS_SAM_LOCAL=true sam local start-api --docker-network local-dev",
+    "dev": "pnpm stop-db && pnpm start-db && sam build && cross-env AWS_SAM_LOCAL=true sam local start-api --docker-network local-dev",
     "start-db": "(docker network create local-dev || echo Network is already created. proceed to next.) && docker-compose down && docker-compose up -d && aws dynamodb create-table --region ap-southeast-2 --endpoint http://localhost:8000 --cli-input-json file://db-table-cli.json",
     "stop-db": "docker-compose down",
     "test": "mocha tests/unit",
@@ -16,23 +16,23 @@
     "deploy": "sam deploy --no-confirm-changeset --no-fail-on-empty-changeset"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.89",
-    "@types/jsonwebtoken": "^8.5.6",
-    "@typescript-eslint/eslint-plugin": "^5.8.1",
-    "@typescript-eslint/parser": "^5.8.1",
-    "aws-sdk": "^2.1048.0",
-    "chai": "^4.3.4",
+    "@types/aws-lambda": "^8.10.101",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
+    "aws-sdk": "^2.1166.0",
+    "chai": "^4.3.6",
     "concurrently": "^6.5.1",
     "cross-env": "^7.0.3",
-    "eslint": "^8.5.0",
-    "eslint-config-airbnb-typescript": "^16.1.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.25.3",
+    "eslint": "^8.18.0",
+    "eslint-config-airbnb-typescript": "^16.2.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "jsonwebtoken": "^8.5.1",
     "mocha": "^8.4.0",
-    "prettier": "^2.5.1",
-    "tslib": "^2.3.1",
-    "typescript": "^4.5.4"
+    "prettier": "^2.7.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.4"
   }
 }
