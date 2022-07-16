@@ -2,6 +2,8 @@
 
 Just a toy project with AWS.
 
+**Moved to [EATSTEAK/lockerweb](https://github.com/EATSTEAK/lockerweb)**
+
 ## To-Dos and Done
 
 - [X] Create monorepo containing backend(Lambda with SAM) and frontend(sveltekit)
